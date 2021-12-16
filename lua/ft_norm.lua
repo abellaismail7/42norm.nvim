@@ -1,28 +1,26 @@
 local M = {}
+local space_checker = require("ft_norm.check_space")
 
-function M.format()
-	ts = vim.treesitter
-	parser = ts.get_parser(0, 'c')
-	tstree = parser:parse()[1]
-	query = ts.parse_query('c', [[
+function	M.format()
+	local ts = vim.treesitter
+	local parser = ts.get_parser(0, 'c')
+	local tstree = parser:parse()[1]
+	local query = ts.parse_query('c', [[
 		[
-		  "break"
-		  "else"
-		  "for"
 		  "if"
 		  "return"
 		  "while"
 		] @keyword
 	]])
 
-	i = 1;
-	for id, node, metadata in query:iter_captures(tstree:root(), 0, 0, 30)
+	for id, node, metadata in query:iter_captures(tstree:root(), 0, 0, 130)
 	do
-		type = node:type()
-		if type == "if"
+		local type = node:type()
+		if type == "if" or type == "return"
 		then
-			nextNode = node:range()
-			vim.cmd("echo '" .. node:range() .. "'")
+			space_checker.check_space(node)
+			-- print(vim.inspect(getmetatable(node)))
+			-- print(node:next_sibling())
 		end
 	end
 end
