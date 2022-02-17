@@ -1,5 +1,18 @@
 local M = {}
 local checker = require("ft_norm.ft_checker")
+local global_var_checker = require("ft_norm.checkers.globals")
+
+--[[
+-------------------------
+|						|
+|   42 HEADER			|
+|						|
+|   PRPROC INCLUDE   	|
+|						|
+|   GLOBAL VARIABLES 	|
+|						|
+-------------------------
+]]--
 
 function	M.format()
 	local ts = vim.treesitter
@@ -7,7 +20,10 @@ function	M.format()
 	local tstree = parser:parse()[1]
 	local root = tstree:root()
 
-	local node = checker.checkHeader(root)
+	local pos = checker.checkHeader(root)
+	pos = checker.check_includes(root, pos)
+
+	global_var_checker.fix(root, pos)
 
 end
 
